@@ -3,34 +3,15 @@
 session_start();
 require '../function.php';
 
-if(!isset($_SESSION["masyarakat"])){
+if(!isset($_SESSION["petugas"])){
     header("location: ../");
     exit;
 }
 
-$id_pengaduan = $_GET["id_pengaduan"];
-$pengaduan= data("SELECT * FROM masyarakat
+$pengaduan = data("SELECT * FROM masyarakat
                     INNER JOIN pengaduan
                     ON masyarakat.nik = pengaduan.nik
-                    WHERE id_pengaduan = '$id_pengaduan'");
-
-$result1 = mysqli_query($conn, "SELECT * FROM pengaduan WHERE status = '0' AND id_pengaduan = '$id_pengaduan'");
-$result2 = mysqli_query($conn, "SELECT * FROM pengaduan WHERE status = 'proses' AND id_pengaduan = '$id_pengaduan'");
-$result3 = mysqli_query($conn, "SELECT * FROM pengaduan WHERE status = 'selesai' AND id_pengaduan = '$id_pengaduan'");
-
-$row1 = mysqli_fetch_assoc($result1);
-$row2 = mysqli_fetch_assoc($result2);
-$row3 = mysqli_fetch_assoc($result3);
-
-if(isset($_POST["hapus"])){
-    if(hapuslaporan($_POST) > 0){
-        echo "<script>alert('Laporan berhasil dihapus');</script>";
-        header("location: laporan-saya.php");
-        exit;
-    }else{
-        echo "<script>alert('Laporan gagal dihapus');</script>";
-    }
-}
+                    WHERE status = 'proses'");
 
 ?>
 
@@ -42,7 +23,7 @@ if(isset($_POST["hapus"])){
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <meta name="description" content="">
         <meta name="author" content="">
-        <title>Laporan Saya | Selengkapnya</title>
+        <title>Tanggapan</title>
         <link href="../vendor/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
         <link href="../vendor/css/sb-admin-2.min.css" rel="stylesheet">
@@ -77,19 +58,19 @@ if(isset($_POST["hapus"])){
                 </div>
 
                 <li class="nav-item">
-                    <a class="nav-link pb-0" href="pengaduan.php">
-                    <i class="fas fa-fw fa-newspaper"></i>
-                    <span>Pengaduan</span></a>
+                    <a class="nav-link pb-0" href="verifikasi.php">
+                    <i class="fas fa-fw fa-check-square"></i>
+                    <span>Verifikasi dan Validasi</span></a>
                 </li>
                 <li class="nav-item active">
-                    <a class="nav-link pb-0" href="laporan-saya.php">
+                    <a class="nav-link pb-0" href="tanggapan.php">
                     <i class="fas fa-fw fa-address-card"></i>
-                    <span>Laporan Saya</span></a>
+                    <span>Tanggpan</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="laporan.php">
-                    <i class="fas fa-fw fa-align-left"></i>
-                    <span>Daftar Laporan</span></a>
+                    <a class="nav-link" href="laporan-selesai.php">
+                    <i class="fas fa-fw fa-clipboard-check"></i>
+                    <span>Laporan Selesai</span></a>
                 </li>
 
                 <hr class="sidebar-divider text-gray-600">
@@ -102,6 +83,11 @@ if(isset($_POST["hapus"])){
                     <a class="nav-link pb-0" href="profile.php">
                     <i class="fas fa-fw fa-user-cog"></i>
                     <span>Profile</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link pb-0" href="users.php">
+                    <i class="fas fa-fw fa-users"></i>
+                    <span>Users</span></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#" data-toggle="modal" data-target="#logoutModal">
@@ -128,7 +114,7 @@ if(isset($_POST["hapus"])){
             <!-- Content Wrapper -->
             <div id="content-wrapper" class="d-flex flex-column">
                 <!-- Main Content -->
-                <div id="content" class="bg-gray-900">
+                <div id="content" class="bg-gray-900 pb-5">
                     <!-- Topbar -->
                     <nav class="navbar navbar-expand navbar-dark bg-dark topbar mb-4 static-top shadow">
                         <!-- Sidebar Toggle (Topbar) -->
@@ -147,7 +133,7 @@ if(isset($_POST["hapus"])){
                                     <i class="fas fa-user-tag"></i>
                                 </a>
                                 <!-- Dropdown - User Information -->
-                                <div class="dropdown-menu dropdown-menu-right bg-dark shadow animated--grow-in" aria-labelledby="userDropdown">
+                                <div class="dropdown-menu dropdown-menu-right text-light bg-dark shadow animated--grow-in" aria-labelledby="userDropdown">
                                     <a class="dropdown-item bg-dark text-light" href="profile.php">
                                         <i class="fas fa-user fa-sm fa-fw mr-2"></i>
                                         Profile
@@ -173,51 +159,45 @@ if(isset($_POST["hapus"])){
 
                     <!-- Begin Page Content -->
                     <div class="container-fluid">
-                        <h3 class="h3 mb-4 ml-3 text-light">Detail Laporan</h3>
-                        <form action="" method="POST" enctype="multipart/form-data">
-                            <div class="col-lg-12">
-                                <div class="card o-hidden border-0 p-4 shadow-lg my-5 bg-dark text-light">
-                                <?php foreach($pengaduan as $item): ?>
-                                    <div>
-                                        <label class="form-label text-light">Tanggal Laporan</label>
-                                        <p class="text-gray-500"><?= $item["tgl_pengaduan"]; ?></p>
-                                    </div>
-                                    <hr class="sidebar-divider mt-0 text-gray-600">
-                                    <div>
-                                        <label class="form-label text-light">Isi Laporan</label>
-                                        <p class="text-gray-500"><?= $item["isi_laporan"]; ?></p>
-                                    </div>
-                                    <hr class="sidebar-divider mt-0 text-gray-600">
-                                    <div>
-                                        <label class="form-label text-light">Foto</label>
-                                        <p>
-                                            <img src="../vendor/img/<?= $item["foto"]; ?>" width="600px">
-                                        </p>
-                                    </div>
-                                    <hr class="sidebar-divider mt-0 text-gray-600">
-                                    <div>
-                                        <label class="form-label text-light">Status</label>
-                                        <p class="text-gray-500"><?= $item["status"]; ?></p>
-                                    </div>
-                                    <hr class="sidebar-divider mt-0 text-gray-600">
-
-                                    <?php if($row1): ?>
-                                    <a class="btn btn-outline-success mt-2" href="edit-laporan.php">Edit</a>
-                                    <?php else: ?>
-                                    <?php endif; ?>
-
-                                    <?php if($row1): ?>
-                                    <a class="btn btn-outline-danger mt-2" href="?id_pengaduan=<?= $item["id_pengaduan"]; ?>" data-toggle="modal" data-target="#hapusModal">Hapus</a>
-                                    <?php elseif($row2): ?>
-                                    <a class="btn btn-outline-danger mt-2" href="?id_pengaduan=<?= $item["id_pengaduan"]; ?>" data-toggle="modal" data-target="#hapusModal">Hapus</a>
-                                    <?php else: ?>
-                                    <?php endif; ?>
-
-                                    <a class="btn btn-outline-primary mt-2" href="laporan-saya.php">Kembali</a>
-                                <?php endforeach; ?>
+                        <h3 class="h3 mb-4 text-light">Verifikasi dan Validasi</h3>
+                        <div class="card shadow mb-4 bg-dark">
+                            <div class="card-header py-3 bg-gray-900">
+                                <h6 class="m-0 font-weight-bold text-gray-500">Data Laporan</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-dark table-hover">
+                                        <thead class="bg-gray-900">
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Nama</th>
+                                                <th>Isi Laporan</th>
+                                                <th>Tanggal Laporan</th>
+                                                <th>Status</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        <?php $i = 1; ?>
+                                        <?php foreach($pengaduan as $item): ?>
+                                            <tr>
+                                                <td><?= $i; $i++; ?></td>
+                                                <td><?= $item["nama"]; ?></td>
+                                                <td><?= $item["isi_laporan"]; ?></td>
+                                                <td><?= $item["tgl_pengaduan"]; ?></td>
+                                                <td><?= $item["status"]; ?></td>
+                                                <td>
+                                                    <form action="" method="POST">
+                                                        <a class="badge btn-primary" href="tanggapan-lengkap.php?id_pengaduan=<?= $item["id_pengaduan"]; ?>" name="verify" value="<?= $item["id_pengaduan"]; ?>">Selengkapnya</a>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
-                        </form>
+                        </div>
                     </div>
                     <!-- /.container-fluid -->
                 </div>
@@ -249,29 +229,6 @@ if(isset($_POST["hapus"])){
                     <div class="modal-footer">
                         <button class="btn btn-outline-danger" type="button" data-dismiss="modal">Batal</button>
                         <a class="btn btn-outline-success" href="../logout.php">Logout</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- hapus Modal-->
-        <div class="modal fade" id="hapusModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content bg-dark text-gray-200">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Hapus Laporan</h5>
-                        <button class="close text-gray-200" type="button" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">×</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <p>Apakah anda yakin ingin menghapus laporan ini?</p>
-                    </div>
-                    <div class="modal-footer">
-                        <form action="" method="POST">
-                            <button class="btn btn-outline-danger" type="button" data-dismiss="modal">Batal</button>
-                            <button class="btn btn-outline-success" name="hapus" value="<?= $item["id_pengaduan"]; ?>">Hapus</button>
-                        </form>
                     </div>
                 </div>
             </div>

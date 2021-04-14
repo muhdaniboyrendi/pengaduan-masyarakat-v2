@@ -163,4 +163,40 @@ function tanggapan($data){
     return mysqli_affected_rows($conn);
 }
 
+
+// hapus laporan
+function hapuslaporan($data){
+    global $conn;
+
+    $id_pengaduan = $data["hapus"];
+    $_SESSION["id_pengaduan"] = $id_pengaduan;
+
+    mysqli_query($conn, "DELETE FROM pengaduan WHERE id_pengaduan = '$id_pengaduan'");
+    return mysqli_affected_rows($conn);
+}
+
+
+// hapus akun masyarakat
+function hapusmasyarakat($data){
+    global $conn;
+
+    $nik = $data["hapus"];
+    $_SESSION["nik"] = $nik;
+
+    mysqli_query($conn, "DELETE FROM masyarakat WHERE nik = '$nik'");
+    return mysqli_affected_rows($conn);
+}
+
+
+// hapus akun petugas
+function hapuspetugas($data){
+    global $conn;
+
+    $id_petugas = $data["hapus"];
+    $_SESSION["id_petugas"] = $id_petugas;
+
+    mysqli_query($conn, "DELETE FROM petugas WHERE id_petugas = '$id_petugas'");
+    return mysqli_affected_rows($conn);
+}
+
 ?>

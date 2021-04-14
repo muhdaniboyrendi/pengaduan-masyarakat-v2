@@ -53,19 +53,19 @@ if(!isset($_SESSION["petugas"])){
                 </div>
 
                 <li class="nav-item">
-                    <a class="nav-link pb-0" href="pengaduan.php">
-                    <i class="fas fa-fw fa-newspaper"></i>
-                    <span>Pengaduan</span></a>
+                    <a class="nav-link pb-0" href="verifikasi.php">
+                    <i class="fas fa-fw fa-check-square"></i>
+                    <span>Verifikasi dan Validasi</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link pb-0" href="laporan-saya.php">
+                    <a class="nav-link pb-0" href="tanggapan.php">
                     <i class="fas fa-fw fa-address-card"></i>
-                    <span>Laporan Saya</span></a>
+                    <span>Tanggpan</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="laporan.php">
-                    <i class="fas fa-fw fa-align-left"></i>
-                    <span>Daftar Laporan</span></a>
+                    <a class="nav-link" href="laporan-selesai.php">
+                    <i class="fas fa-fw fa-clipboard-check"></i>
+                    <span>Laporan Selesai</span></a>
                 </li>
 
                 <hr class="sidebar-divider text-gray-600">
@@ -78,6 +78,11 @@ if(!isset($_SESSION["petugas"])){
                     <a class="nav-link pb-0" href="profile.php">
                     <i class="fas fa-fw fa-user-cog"></i>
                     <span>Profile</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link pb-0" href="users.php">
+                    <i class="fas fa-fw fa-users"></i>
+                    <span>Users</span></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#" data-toggle="modal" data-target="#logoutModal">
@@ -104,7 +109,7 @@ if(!isset($_SESSION["petugas"])){
             <!-- Content Wrapper -->
             <div id="content-wrapper" class="d-flex flex-column">
                 <!-- Main Content -->
-                <div id="content" class="bg-gray-900">
+                <div id="content" class="bg-gray-900 pb-5">
                     <!-- Topbar -->
                     <nav class="navbar navbar-expand navbar-dark bg-dark topbar mb-4 static-top shadow">
                         <!-- Sidebar Toggle (Topbar) -->
@@ -154,27 +159,27 @@ if(!isset($_SESSION["petugas"])){
                             <div class="col-sm-4">
                                 <div class="card bg-dark">
                                     <div class="card-body">
-                                        <h5 class="card-title text-white"><i class="fas fa-fw fa-newspaper"></i> Pengaduan</h5>
-                                        <p class="card-text text-gray-500">Menulis laporan pengaduan</p>
-                                        <a href="pengaduan.php" class="btn btn-outline-primary">Tulis Pengaduan</a>
+                                        <h5 class="card-title text-white"><i class="fas fa-fw fa-check-square"></i> Verifikasi dan Validasi</h5>
+                                        <p class="card-text text-gray-500">Mamverifikasi laporan yang telah dikirim oleh masyarakat</p>
+                                        <a href="verifikasi.php" class="btn btn-outline-primary">Verifikasi</a>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-sm-4">
                                 <div class="card bg-dark">
                                     <div class="card-body">
-                                        <h5 class="card-title text-white"><i class="fas fa-fw fa-address-card"></i> Laporan Saya</h5>
-                                        <p class="card-text text-gray-500">Melihat laporan yang telah anda dikirim</p>
-                                        <a href="laporan-saya.php" class="btn btn-outline-primary">Lihat Laporan</a>
+                                        <h5 class="card-title text-white"><i class="fas fa-fw fa-address-card"></i> Tanggapan</h5>
+                                        <p class="card-text text-gray-500">Memberikan tanggapan laporan yang telah terverifikasi</p>
+                                        <a href="tanggapan.php" class="btn btn-outline-primary">Tanggpan</a>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-sm-4">
                                 <div class="card bg-dark">
                                     <div class="card-body">
-                                        <h5 class="card-title text-white"><i class="fas fa-fw fa-align-left"></i> Daftar Laporan</h5>
-                                        <p class="card-text text-gray-500">Melihat seluruh daftar laporan </p>
-                                        <a href="laporan.php" class="btn btn-outline-primary">Lihat Laporan</a>
+                                        <h5 class="card-title text-white"><i class="fas fa-fw fa-clipboard-check"></i> Laporan Selesai</h5>
+                                        <p class="card-text text-gray-500">Laporan yang telah terverifikasi dan ditanggapi</p>
+                                        <a href="laporan-selesai.php" class="btn btn-outline-primary">Lihat Laporan</a>
                                     </div>
                                 </div>
                             </div>
@@ -188,6 +193,15 @@ if(!isset($_SESSION["petugas"])){
                                         <h5 class="card-title text-white"><i class="fas fa-fw fa-user-cog"></i> Profile</h5>
                                         <p class="card-text text-gray-500">Mamanajemen akun anda</p>
                                         <a href="profile.php" class="btn btn-outline-primary">Lihat Profile</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="card bg-dark">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-white"><i class="fas fa-fw fa-users"></i> Users</h5>
+                                        <p class="card-text text-gray-500">Data seluruh masyarakat</p>
+                                        <a href="users.php" class="btn btn-outline-primary">Users</a>
                                     </div>
                                 </div>
                             </div>

@@ -3,32 +3,20 @@
 session_start();
 require '../function.php';
 
-if(!isset($_SESSION["masyarakat"])){
+if(!isset($_SESSION["petugas"])){
     header("location: ../");
     exit;
 }
 
-$id_pengaduan = $_GET["id_pengaduan"];
-$pengaduan= data("SELECT * FROM masyarakat
-                    INNER JOIN pengaduan
-                    ON masyarakat.nik = pengaduan.nik
-                    WHERE id_pengaduan = '$id_pengaduan'");
-
-$result1 = mysqli_query($conn, "SELECT * FROM pengaduan WHERE status = '0' AND id_pengaduan = '$id_pengaduan'");
-$result2 = mysqli_query($conn, "SELECT * FROM pengaduan WHERE status = 'proses' AND id_pengaduan = '$id_pengaduan'");
-$result3 = mysqli_query($conn, "SELECT * FROM pengaduan WHERE status = 'selesai' AND id_pengaduan = '$id_pengaduan'");
-
-$row1 = mysqli_fetch_assoc($result1);
-$row2 = mysqli_fetch_assoc($result2);
-$row3 = mysqli_fetch_assoc($result3);
+$profil = data("SELECT * FROM petugas WHERE id_petugas = '".$_SESSION['data']['id_petugas']."'");
 
 if(isset($_POST["hapus"])){
-    if(hapuslaporan($_POST) > 0){
-        echo "<script>alert('Laporan berhasil dihapus');</script>";
-        header("location: laporan-saya.php");
+    if(hapuspetugas($_POST) > 0){
+        echo "<script>alert('Akun anda berhasil dihapus');</script>";
+        header("location: ../logout.php");
         exit;
     }else{
-        echo "<script>alert('Laporan gagal dihapus');</script>";
+        echo "<script>alert('Akun anda gagal dihapus');</script>";
     }
 }
 
@@ -42,7 +30,7 @@ if(isset($_POST["hapus"])){
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <meta name="description" content="">
         <meta name="author" content="">
-        <title>Laporan Saya | Selengkapnya</title>
+        <title>Profile</title>
         <link href="../vendor/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
         <link href="../vendor/css/sb-admin-2.min.css" rel="stylesheet">
@@ -77,19 +65,19 @@ if(isset($_POST["hapus"])){
                 </div>
 
                 <li class="nav-item">
-                    <a class="nav-link pb-0" href="pengaduan.php">
-                    <i class="fas fa-fw fa-newspaper"></i>
-                    <span>Pengaduan</span></a>
-                </li>
-                <li class="nav-item active">
-                    <a class="nav-link pb-0" href="laporan-saya.php">
-                    <i class="fas fa-fw fa-address-card"></i>
-                    <span>Laporan Saya</span></a>
+                    <a class="nav-link pb-0" href="verifikasi.php">
+                    <i class="fas fa-fw fa-check-square"></i>
+                    <span>Verifikasi dan Validasi</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="laporan.php">
-                    <i class="fas fa-fw fa-align-left"></i>
-                    <span>Daftar Laporan</span></a>
+                    <a class="nav-link pb-0" href="tanggapan.php">
+                    <i class="fas fa-fw fa-address-card"></i>
+                    <span>Tanggpan</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="laporan-selesai.php">
+                    <i class="fas fa-fw fa-clipboard-check"></i>
+                    <span>Laporan Selesai</span></a>
                 </li>
 
                 <hr class="sidebar-divider text-gray-600">
@@ -98,10 +86,15 @@ if(isset($_POST["hapus"])){
                     User
                 </div>
 
-                <li class="nav-item">
+                <li class="nav-item active">
                     <a class="nav-link pb-0" href="profile.php">
                     <i class="fas fa-fw fa-user-cog"></i>
                     <span>Profile</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link pb-0" href="users.php">
+                    <i class="fas fa-fw fa-users"></i>
+                    <span>Users</span></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#" data-toggle="modal" data-target="#logoutModal">
@@ -128,7 +121,7 @@ if(isset($_POST["hapus"])){
             <!-- Content Wrapper -->
             <div id="content-wrapper" class="d-flex flex-column">
                 <!-- Main Content -->
-                <div id="content" class="bg-gray-900">
+                <div id="content" class="bg-gray-900 pb-5">
                     <!-- Topbar -->
                     <nav class="navbar navbar-expand navbar-dark bg-dark topbar mb-4 static-top shadow">
                         <!-- Sidebar Toggle (Topbar) -->
@@ -147,7 +140,7 @@ if(isset($_POST["hapus"])){
                                     <i class="fas fa-user-tag"></i>
                                 </a>
                                 <!-- Dropdown - User Information -->
-                                <div class="dropdown-menu dropdown-menu-right bg-dark shadow animated--grow-in" aria-labelledby="userDropdown">
+                                <div class="dropdown-menu dropdown-menu-right text-light bg-dark shadow animated--grow-in" aria-labelledby="userDropdown">
                                     <a class="dropdown-item bg-dark text-light" href="profile.php">
                                         <i class="fas fa-user fa-sm fa-fw mr-2"></i>
                                         Profile
@@ -173,51 +166,35 @@ if(isset($_POST["hapus"])){
 
                     <!-- Begin Page Content -->
                     <div class="container-fluid">
-                        <h3 class="h3 mb-4 ml-3 text-light">Detail Laporan</h3>
-                        <form action="" method="POST" enctype="multipart/form-data">
-                            <div class="col-lg-12">
-                                <div class="card o-hidden border-0 p-4 shadow-lg my-5 bg-dark text-light">
-                                <?php foreach($pengaduan as $item): ?>
-                                    <div>
-                                        <label class="form-label text-light">Tanggal Laporan</label>
-                                        <p class="text-gray-500"><?= $item["tgl_pengaduan"]; ?></p>
-                                    </div>
-                                    <hr class="sidebar-divider mt-0 text-gray-600">
-                                    <div>
-                                        <label class="form-label text-light">Isi Laporan</label>
-                                        <p class="text-gray-500"><?= $item["isi_laporan"]; ?></p>
-                                    </div>
-                                    <hr class="sidebar-divider mt-0 text-gray-600">
-                                    <div>
-                                        <label class="form-label text-light">Foto</label>
-                                        <p>
-                                            <img src="../vendor/img/<?= $item["foto"]; ?>" width="600px">
-                                        </p>
-                                    </div>
-                                    <hr class="sidebar-divider mt-0 text-gray-600">
-                                    <div>
-                                        <label class="form-label text-light">Status</label>
-                                        <p class="text-gray-500"><?= $item["status"]; ?></p>
-                                    </div>
-                                    <hr class="sidebar-divider mt-0 text-gray-600">
-
-                                    <?php if($row1): ?>
-                                    <a class="btn btn-outline-success mt-2" href="edit-laporan.php">Edit</a>
-                                    <?php else: ?>
-                                    <?php endif; ?>
-
-                                    <?php if($row1): ?>
-                                    <a class="btn btn-outline-danger mt-2" href="?id_pengaduan=<?= $item["id_pengaduan"]; ?>" data-toggle="modal" data-target="#hapusModal">Hapus</a>
-                                    <?php elseif($row2): ?>
-                                    <a class="btn btn-outline-danger mt-2" href="?id_pengaduan=<?= $item["id_pengaduan"]; ?>" data-toggle="modal" data-target="#hapusModal">Hapus</a>
-                                    <?php else: ?>
-                                    <?php endif; ?>
-
-                                    <a class="btn btn-outline-primary mt-2" href="laporan-saya.php">Kembali</a>
-                                <?php endforeach; ?>
+                        <h3 class="h3 mb-4 ml-3 text-light">Profile</h3>
+                        <div class="col-lg-12">
+                            <div class="card o-hidden mt-0 border-0 p-4 shadow-lg my-5 bg-dark text-light">
+                            <?php foreach($profil as $item): ?>
+                                <div>
+                                    <label class="form-label text-light">Nama</label>
+                                    <p class="text-gray-500"><?= $item["nama_petugas"]; ?></p>
                                 </div>
+                                <hr class="sidebar-divider mt-0 text-gray-600">
+                                <div>
+                                    <label class="form-label text-light">Username</label>
+                                    <p class="text-gray-500"><?= $item["username"]; ?></p>
+                                </div>
+                                <hr class="sidebar-divider mt-0 text-gray-600">
+                                <div>
+                                    <label class="form-label text-light">Telepone</label>
+                                    <p class="text-gray-500"><?= $item["telp"]; ?></p>
+                                </div>
+                                <hr class="sidebar-divider mt-0 text-gray-600">
+                                <div>
+                                    <label class="form-label text-light">Level</label>
+                                    <p class="text-gray-500"><?= $item["level"]; ?></p>
+                                </div>
+                                <hr class="sidebar-divider mt-0 text-gray-600">
+                                <a class="btn btn-outline-primary mt-2" href="edit-profile.php?id_petugas=<?= $item["id_petugas"]; ?>">Edit Profile</a>
+                                <a class="btn btn-outline-danger mt-2" href="?id_petugas=<?= $item["id_petugas"]; ?>" data-toggle="modal" data-target="#hapusModal">Hapus Akun</a>
+                            <?php endforeach; ?>
                             </div>
-                        </form>
+                        </div>
                     </div>
                     <!-- /.container-fluid -->
                 </div>
@@ -259,18 +236,18 @@ if(isset($_POST["hapus"])){
             <div class="modal-dialog" role="document">
                 <div class="modal-content bg-dark text-gray-200">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Hapus Laporan</h5>
+                        <h5 class="modal-title" id="exampleModalLabel">Hapus Akun</h5>
                         <button class="close text-gray-200" type="button" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">×</span>
                         </button>
                     </div>
                     <div class="modal-body">
-                        <p>Apakah anda yakin ingin menghapus laporan ini?</p>
+                        <p>Apakah anda yakin ingin menghapus akun anda? Akun yang telah dihapus tidak dapat dikembalikan lagi</p>
                     </div>
                     <div class="modal-footer">
                         <form action="" method="POST">
                             <button class="btn btn-outline-danger" type="button" data-dismiss="modal">Batal</button>
-                            <button class="btn btn-outline-success" name="hapus" value="<?= $item["id_pengaduan"]; ?>">Hapus</button>
+                            <button class="btn btn-outline-success" name="hapus" value="<?= $item["id_petugas"]; ?>">Hapus</button>
                         </form>
                     </div>
                 </div>

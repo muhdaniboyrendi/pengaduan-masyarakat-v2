@@ -8,7 +8,17 @@ if(!isset($_SESSION["masyarakat"])){
     exit;
 }
 
-$profil = data("SELECT * FROM masyarakat WHERE username = '".$_SESSION["data"]["username"]."'")
+$profil = data("SELECT * FROM masyarakat WHERE username = '".$_SESSION["data"]["username"]."'");
+
+if(isset($_POST["hapus"])){
+    if(hapusmasyarakat($_POST) > 0){
+        echo "<script>alert('Akun anda berhasil dihapus');</script>";
+        header("location: ../logout.php");
+        exit;
+    }else{
+        echo "<script>alert('Akun anda gagal dihapus');</script>";
+    }
+}
 
 ?>
 
@@ -230,8 +240,10 @@ $profil = data("SELECT * FROM masyarakat WHERE username = '".$_SESSION["data"]["
                         <p>Apakah anda yakin ingin menghapus akun anda? Akun yang telah dihapus tidak dapat dikembalikan lagi</p>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-outline-danger" type="button" data-dismiss="modal">Batal</button>
-                        <a class="btn btn-outline-success" href="hapus-akun.php?nik=<?= $item["nik"]; ?>">Hapus</a>
+                        <form action="" method="POST">
+                            <button class="btn btn-outline-danger" type="button" data-dismiss="modal">Batal</button>
+                            <button class="btn btn-outline-success" name="hapus" value="<?= $item["nik"]; ?>">Hapus</button>
+                        </form>
                     </div>
                 </div>
             </div>
